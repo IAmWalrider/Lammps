@@ -1,0 +1,105 @@
+LAMMPS (23 Jun 2022 - Update 1)
+OMP_NUM_THREADS environment is not set. Defaulting to 1 thread. (src/comm.cpp:98)
+  using 1 OpenMP thread(s) per MPI task
+# 1) Initialization
+units lj
+dimension 2
+atom_style atomic
+pair_style lj/cut 2.5
+boundary p p p
+
+
+# 2) System definition
+region mybox block -30 30 -30 30 -0.5 0.5
+create_box 2 mybox
+Created orthogonal box = (-30 -30 -0.5) to (30 30 0.5)
+  1 by 1 by 1 MPI processor grid
+region mycylin cylinder z 0 0 15 INF INF side in
+region mycylou cylinder z 0 0 15 INF INF side out
+create_atoms 1 random 1000 341341 mycylou
+Created 1000 atoms
+  using lattice units in orthogonal box = (-30 -30 -0.5) to (30 30 0.5)
+  create_atoms CPU = 0.001 seconds
+create_atoms 2 random 150 127569 mycylin
+Created 150 atoms
+  using lattice units in orthogonal box = (-30 -30 -0.5) to (30 30 0.5)
+  create_atoms CPU = 0.000 seconds
+
+# 3) Simulation settings
+mass 1 1
+mass 2 1
+pair_coeff 1 1 1.0 1.0
+pair_coeff 2 2 0.5 3.0
+neigh_modify every 1 delay 5 check yes
+
+# 4) Visualization
+thermo 10
+dump mydmp all atom 10 dump.min.lammpstrj
+
+# 5) Run
+minimize 1.0e-4 1.0e-6 1000 10000
+WARNING: Using 'neigh_modify every 1 delay 0 check yes' setting during minimization (src/min.cpp:187)
+Generated 1 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update every 1 steps, delay 0 steps, check yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 2.8
+  ghost atom cutoff = 2.8
+  binsize = 1.4, bins = 43 43 1
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair lj/cut, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/2d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 5.234 | 5.234 | 5.234 Mbytes
+   Step          Temp          E_pair         E_mol          TotEng         Press     
+         0   0              1.6873599e+15  0              1.6873599e+15  3.2341064e+15
+        10   0              4.746638e+08   0              4.746638e+08   9.0977902e+08
+        20   0              51624.405      0              51624.405      99101.18     
+        30   0              2185.03        0              2185.03        4229.7823    
+        40   0              279.78805      0              279.78805      554.24567    
+        50   0              66.13181       0              66.13181       136.8452     
+        60   0              18.092049      0              18.092049      40.820024    
+        70   0              7.7389171      0              7.7389171      19.504039    
+        80   0              3.1459596      0              3.1459596      9.7336542    
+        90   0              0.88236892     0              0.88236892     4.7609472    
+        97   0              0.22811743     0              0.22811743     3.3104754    
+Loop time of 0.114357 on 1 procs for 97 steps with 1150 atoms
+
+92.5% CPU use with 1 MPI tasks x 1 OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+    1.68735985028252e+15   0.22812429345475  0.228117432481017
+  Force two-norm initial, final = 2.4919555e+20 939.22327
+  Force max component initial, final = 1.4864594e+20 181.0258
+  Final line search alpha, max atom move = 1.3502929e-08 2.4443785e-06
+  Iterations, force evaluations = 97 162
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.060568   | 0.060568   | 0.060568   |   0.0 | 52.96
+Neigh   | 0.017241   | 0.017241   | 0.017241   |   0.0 | 15.08
+Comm    | 0.0023719  | 0.0023719  | 0.0023719  |   0.0 |  2.07
+Output  | 0.020767   | 0.020767   | 0.020767   |   0.0 | 18.16
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.01341    |            |       | 11.73
+
+Nlocal:           1150 ave        1150 max        1150 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:            240 ave         240 max         240 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:           4759 ave        4759 max        4759 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 4759
+Ave neighs/atom = 4.1382609
+Neighbor list builds = 42
+Dangerous builds = 0
+write_data minimized_coordinate.data
+System init for write_data ...
+Generated 1 of 1 mixed pair_coeff terms from geometric mixing rule
+Total wall time: 0:00:00
